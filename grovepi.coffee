@@ -37,18 +37,23 @@ module.exports = class GrovePI
 			debug.log "ERROR:", error if error
 
 	receive = ( port, args... ) ->
+		readArgs = []
 		if args[1]
-			size = args[0]
+			length = args[0]
 			callback = args[1]
+			readArgs.push port
+			readArgs.push length
 		else
 			callback = args[0]
-		readCmd = if size then 'readBytes' else 'readByte'
-		writeArgs = [ port ]
-		writeArgs.push size  if size
-		wire[readCmd] writeArgs..., (error, data) ->
+
+		readArgs.push (error, data) ->
 			callback data
 			debug.log "Reveive", port, data
 			debug.log "ERROR:", error if error
+
+		readCmd = if length then 'readBytes' else 'readByte'
+
+		wire[readCmd] readArgs...
 
 	write: ( type, port, data, callback ) ->
 		data = [port].concat data
