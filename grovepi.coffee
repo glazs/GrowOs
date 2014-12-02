@@ -27,25 +27,49 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 		@wire = wire  if debug.mode
 
-	analog:
-		write: (byte, callback) ->
-			wire.writeByte CMD.analog.write, byte, callback
-		read: (callback) ->
-			wire.writeBytes CMD.analog.read, 0, ->
-				wire.readByte (err, byte) -> callback byte
+	write: ( type, data, callback ) ->
+		switch type
+			when 'digital'
+				writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
+				wire[writeCmd] CMD.digital.write, data, ( error ) ->
+					callback()
+					debug.log "Digital write", CMD.digital.write, data
+					debug.log "ERROR:", error if error
+			when 'analog'
+				wire.writeByte CMD.analog.write, data,  ( error ) ->
+					callback()
+					debug.log "Analog write", CMD.analog.write, data
+					debug.log "ERROR:", error if error
+	read: ( type, callback ) ->
+		switch type
+			when 'digital'
+				isBlock = true
+				readCmd = if isBlock then 'readBytes' else 'readByte'
+				wire.writeBytes CMD.digital.read, 0, ->
+					wire[readCmd] (error, data) ->
+						callback data
+						debug.log "Digital read", CMD.digital.read, data
+						debug.log "ERROR:", error if error
+			when 'analog'
+				wire.writeBytes CMD.analog.read, 0, ->
+					wire.readByte (err, data) ->
+						callback data
+						debug.log "Analog read", CMD.analog.read, data
+						debug.log "ERROR:", error if error
+
+
 
 	digital:
 		write: (bytes, callback) ->
-			writeCmd = if Array.isArray bytes then 'writeBytes' else 'writeByte'
-			wire[writeCmd] CMD.digital.write, bytes, ( error ) ->
-				callback()
-				debug.log "Digital write", CMD.digital.write, bytes
-				debug.log "ERROR:", error if error
+			@write 'digital', bytes, callback
 		read: (isBlock, callback) ->
-			readCmd = if isBlock then 'readBytes' else 'readByte'
-			wire.writeBytes CMD.digital.read, 0, ->
-				wire[readCmd] (err, byte) -> callback byte
-				debug.log "Digital read", CMD.digital.read, byte
+			@read 'digital', callback
+
+	analog:
+		write: (byte, callback) ->
+			@write 'analog', byte, callback
+		read: (callback) ->
+			@read 'analog', callback
 
 	input: (callback) ->
 		wire.writeByte CMD.mode, 0, -> # Switch to input
