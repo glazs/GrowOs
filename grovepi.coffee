@@ -70,7 +70,3 @@ module.exports = class GrovePI
 			wire.readBytes port, 3, (err, value) ->
 				callback value[2] + value[1]
 
-	# getinfo: ( callback ) ->
-	# 	wire.writeBytes 50, [0, 0, 0] ->
-	# 		wire.readByte ( err, byte ) -> callback byte
-
