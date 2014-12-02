@@ -27,7 +27,8 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 		@wire = wire  if debug.mode
 
-	write: ( type, data, callback ) ->
+	write: ( type, port, data, callback ) ->
+		data = [port].concat data
 		switch type
 			when 'digital'
 				writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
