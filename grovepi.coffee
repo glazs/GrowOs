@@ -27,14 +27,16 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 		@wire = wire  if debug.mode
 
-	send: ( cmd, data, callback ) ->
+
+
+	send = ( cmd, data, callback ) ->
 		writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
 		wire[writeCmd] cmd, data, ( error ) ->
 			callback()
 			debug.log "Send", cmd, data
 			debug.log "ERROR:", error if error
 
-	receive: ( port, args... ) ->
+	receive = ( port, args... ) ->
 		if args[1]
 			size = args[0]
 			callback = args[1]
@@ -50,11 +52,7 @@ module.exports = class GrovePI
 
 	write: ( type, port, data, callback ) ->
 		data = [port].concat data
-		switch type
-			when 'digital'
-				@send CMD.digital.write, data, callback
-			when 'analog'
-				@send CMD.analog.write, data, callback
+		send CMD[type].write, data, callback
 
 	read: ( type, args... ) ->
 		switch type
