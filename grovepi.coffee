@@ -63,7 +63,7 @@ module.exports = class GrovePI
 			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
-		write CMD.ranger, port, [0,0], ->
-			read port, 3, (err, value) ->
+		send CMD.ranger, port, [0,0], ->
+			receive port, 3, (err, value) ->
 				callback value[2] + value[1]
 
