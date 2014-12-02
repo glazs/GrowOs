@@ -30,9 +30,6 @@ module.exports = class GrovePI
 
 
 	send = ( cmd, args... ) ->
-		#data, callback
-		writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
-		
 		writeArgs = []
 		if args[1]
 			data = args[0]
@@ -43,6 +40,8 @@ module.exports = class GrovePI
 		else
 			callback = args[0]
 			writeCmd = 'writeByte'
+
+		console.log arguments
 
 		writeArgs.push (error) ->
 			callback()
