@@ -55,23 +55,7 @@ module.exports = class GrovePI
 		send CMD[type].write, data, callback
 
 	read: ( type, args... ) ->
-		switch type
-			when 'digital'
-				isBlock = args[0]
-				callback = args[1]
-				readCmd = if isBlock then 'readBytes' else 'readByte'
-				wire.writeBytes CMD.digital.read, 0, ->
-					wire[readCmd] (error, data) ->
-						callback data
-						debug.log "Digital read", CMD.digital.read, data
-						debug.log "ERROR:", error if error
-			when 'analog'
-				callback = args[0]
-				wire.writeBytes CMD.analog.read, 0, ->
-					wire.readByte (err, data) ->
-						callback data
-						debug.log "Analog read", CMD.analog.read, data
-						debug.log "ERROR:", error if error
+		send CMD[type].read, args...
 
 	input: (callback) ->
 		wire.writeByte CMD.mode, 0, -> # Switch to input
@@ -79,7 +63,7 @@ module.exports = class GrovePI
 			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
-		wire.writeBytes CMD.ranger, [port,0,0], ->
-			wire.readBytes port, 3, (err, value) ->
+		write CMD.ranger, port, [0,0], ->
+			read port, 3, (err, value) ->
 				callback value[2] + value[1]
 
