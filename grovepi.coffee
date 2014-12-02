@@ -29,12 +29,11 @@ module.exports = class GrovePI
 
 
 
-	send = ( cmd, args... ) ->
+	send = ( data, args... ) ->
 		writeArgs = []
 		if args[1]
 			data = args[0]
 			callback = args[1]
-			writeArgs.push cmd
 			writeArgs.push data
 			writeCmd = 'writeBytes'
 		else
@@ -45,7 +44,7 @@ module.exports = class GrovePI
 
 		writeArgs.push (error) ->
 			callback()
-			debug.log "Send", cmd
+			debug.log "Send", data
 			debug.log "ERROR:", error if error
 
 		wire[writeCmd] writeArgs...
@@ -83,7 +82,7 @@ module.exports = class GrovePI
 			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
-		send CMD.ranger, port, [0,0], ->
+		send CMD.ranger, [port,0,0], ->
 			receive port, 3, (data) ->
 				callback data[2] + data[1]
 
