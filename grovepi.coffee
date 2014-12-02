@@ -41,10 +41,11 @@ module.exports = class GrovePI
 					callback()
 					debug.log "Analog write", CMD.analog.write, data
 					debug.log "ERROR:", error if error
-	read: ( type, callback ) ->
+	read: ( type, args... ) ->
 		switch type
 			when 'digital'
-				isBlock = true
+				isBlock = args[0]
+				callback = args[1]
 				readCmd = if isBlock then 'readBytes' else 'readByte'
 				wire.writeBytes CMD.digital.read, 0, ->
 					wire[readCmd] (error, data) ->
@@ -52,6 +53,7 @@ module.exports = class GrovePI
 						debug.log "Digital read", CMD.digital.read, data
 						debug.log "ERROR:", error if error
 			when 'analog'
+				callback = args[0]
 				wire.writeBytes CMD.analog.read, 0, ->
 					wire.readByte (err, data) ->
 						callback data
