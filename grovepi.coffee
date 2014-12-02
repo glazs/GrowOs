@@ -27,38 +27,52 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 		@wire = wire  if debug.mode
 
+
+
+	send = ( cmd, port, args... ) ->
+		writeArgs = [cmd]
+		if args[1]
+			data = args[0]
+			callback = args[1]
+			writeArgs.push [port].concat data
+			writeCmd = 'writeBytes'
+		else
+			writeArgs.push port
+			callback = args[0]
+			writeCmd = 'writeByte'
+
+		writeArgs.push (error) ->
+			callback()
+			debug.log "Send", data, 'to port', port
+			debug.log "ERROR:", error if error
+
+		wire[writeCmd] writeArgs...
+
+
+	receive = ( port, args... ) ->
+		readArgs = []
+		if args[1]
+			length = args[0]
+			callback = args[1]
+			readArgs.push port
+			readArgs.push length
+			readCmd = 'readBytes'
+		else
+			callback = args[0]
+			readCmd = 'readByte'
+
+		readArgs.push (error, data) ->
+			callback data
+			debug.log "Receive", (Array.prototype.slice.call data, 0), 'from port', port
+			debug.log "ERROR:", error if error
+
+		wire[readCmd] readArgs...
+
 	write: ( type, port, data, callback ) ->
-		data = [port].concat data
-		switch type
-			when 'digital'
-				writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
-				wire[writeCmd] CMD.digital.write, data, ( error ) ->
-					callback()
-					debug.log "Digital write", CMD.digital.write, data
-					debug.log "ERROR:", error if error
-			when 'analog'
-				wire.writeByte CMD.analog.write, data,  ( error ) ->
-					callback()
-					debug.log "Analog write", CMD.analog.write, data
-					debug.log "ERROR:", error if error
+		send CMD[type].write, port, data, callback
+
 	read: ( type, args... ) ->
-		switch type
-			when 'digital'
-				isBlock = args[0]
-				callback = args[1]
-				readCmd = if isBlock then 'readBytes' else 'readByte'
-				wire.writeBytes CMD.digital.read, 0, ->
-					wire[readCmd] (error, data) ->
-						callback data
-						debug.log "Digital read", CMD.digital.read, data
-						debug.log "ERROR:", error if error
-			when 'analog'
-				callback = args[0]
-				wire.writeBytes CMD.analog.read, 0, ->
-					wire.readByte (err, data) ->
-						callback data
-						debug.log "Analog read", CMD.analog.read, data
-						debug.log "ERROR:", error if error
+		send CMD[type].read, args...
 
 	input: (callback) ->
 		wire.writeByte CMD.mode, 0, -> # Switch to input
@@ -66,11 +80,7 @@ module.exports = class GrovePI
 			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
-		wire.writeBytes CMD.ranger, [port,0,0], ->
-			wire.readBytes port, 3, (err, value) ->
-				callback value[2] + value[1]
-
-	# getinfo: ( callback ) ->
-	# 	wire.writeBytes 50, [0, 0, 0] ->
-	# 		wire.readByte ( err, byte ) -> callback byte
+		send CMD.ranger, port, [0,0], ->
+			receive port, 3, (data) ->
+				callback data[2] + data[1]
 
