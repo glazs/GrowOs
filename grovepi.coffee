@@ -29,12 +29,28 @@ module.exports = class GrovePI
 
 
 
-	send = ( cmd, data, callback ) ->
+	send = ( cmd, args... ) ->
+		#data, callback
 		writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
-		wire[writeCmd] cmd, data, ( error ) ->
+		
+		writeArgs = []
+		if args[1]
+			data = args[0]
+			callback = args[1]
+			writeArgs.push port
+			writeArgs.push length
+			writeCmd = 'writeBytes'
+		else
+			callback = args[0]
+			writeCmd = 'writeByte'
+
+		writeArgs.push (error) ->
 			callback()
-			debug.log "Send", cmd, data
+			debug.log "Send", cmd
 			debug.log "ERROR:", error if error
+
+		wire[writeCmd] writeArgs...
+
 
 	receive = ( port, args... ) ->
 		readArgs = []
@@ -43,15 +59,15 @@ module.exports = class GrovePI
 			callback = args[1]
 			readArgs.push port
 			readArgs.push length
+			readCmd = 'readBytes'
 		else
 			callback = args[0]
+			readCmd = 'readByte'
 
 		readArgs.push (error, data) ->
 			callback data
 			debug.log "Reveive", port, data
 			debug.log "ERROR:", error if error
-
-		readCmd = if length then 'readBytes' else 'readByte'
 
 		wire[readCmd] readArgs...
 
