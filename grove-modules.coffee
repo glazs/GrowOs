@@ -47,16 +47,15 @@ module.exports = class Modules
 				if @state isnt state
 					@state = state
 					bytes = [
-						@port # порт, на котором висит реле
 						if @state then 1 else 0 # вкл выкл
 						0 # хуй знает чо за ноль
 					]
-					controller.digital.write bytes, => # команда, данные, коллбэк
+					controller.write 'digital', @port, bytes, => # команда, данные, коллбэк
 						callback @state  if callback
-						debug.log "Relay #{@port} is #{debug.stateTxt[@state]}"
+						debug.log "Relay #{@port} of controller #{controller.id} is #{debug.stateTxt[@state]}"
 				else
 					callback @state if callback
-					debug.log "Relay on port #{@port} is #{ debug.stateTxt[@state] }. No changes."
+					debug.log "Relay on port #{@port} of controller #{controller.id} is #{ debug.stateTxt[@state] }. No changes."
 			else
 				@state
 

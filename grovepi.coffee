@@ -57,20 +57,6 @@ module.exports = class GrovePI
 						debug.log "Analog read", CMD.analog.read, data
 						debug.log "ERROR:", error if error
 
-
-
-	digital:
-		write: (bytes, callback) ->
-			@write 'digital', bytes, callback
-		read: (isBlock, callback) ->
-			@read 'digital', callback
-
-	analog:
-		write: (byte, callback) ->
-			@write 'analog', byte, callback
-		read: (callback) ->
-			@read 'analog', callback
-
 	input: (callback) ->
 		wire.writeByte CMD.mode, 0, -> # Switch to input
 			callback() # Do what you want
