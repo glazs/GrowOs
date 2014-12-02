@@ -1,0 +1,11 @@
+{
+	"name": "growos",
+	"version": "0.0.1",
+	"description": "Greenhouse sheduler and monitor written on Node.js and CoffeeScript",
+	"author": "glazs <admin@rock.su>",
+
+	"dependencies": {
+		"i2c": "*",
+		"coffee-script": "*"
+	}
+}
