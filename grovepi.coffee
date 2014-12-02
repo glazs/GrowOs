@@ -29,18 +29,17 @@ module.exports = class GrovePI
 
 
 
-	send = ( cmd, args... ) ->
+	send = ( cmd, port, args... ) ->
 		writeArgs = [cmd]
 		if args[1]
 			data = args[0]
 			callback = args[1]
-			writeArgs.push data
+			writeArgs.push [port].concat data
 			writeCmd = 'writeBytes'
 		else
+			writeArgs.push port
 			callback = args[0]
 			writeCmd = 'writeByte'
-
-		console.log arguments
 
 		writeArgs.push (error) ->
 			callback()
@@ -64,14 +63,13 @@ module.exports = class GrovePI
 
 		readArgs.push (error, data) ->
 			callback data
-			debug.log "Reveive", port, data
+			debug.log "Receive", port, data
 			debug.log "ERROR:", error if error
 
 		wire[readCmd] readArgs...
 
 	write: ( type, port, data, callback ) ->
-		data = [port].concat data
-		send CMD[type].write, data, callback
+		send CMD[type].write, port, data, callback
 
 	read: ( type, args... ) ->
 		send CMD[type].read, args...
@@ -82,7 +80,7 @@ module.exports = class GrovePI
 			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
-		send CMD.ranger, [port,0,0], ->
+		send CMD.ranger, port, [0,0], ->
 			receive port, 3, (data) ->
 				callback data[2] + data[1]
 
