@@ -63,7 +63,7 @@ module.exports = class GrovePI
 
 		readArgs.push (error, data) ->
 			callback data
-			debug.log "Receive", (Array.slice.call data, 0), 'from port', port
+			debug.log "Receive", (Array.prototype.slice.call data, 0), 'from port', port
 			debug.log "ERROR:", error if error
 
 		wire[readCmd] readArgs...
