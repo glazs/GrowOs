@@ -1,0 +1,68 @@
+{
+  "day": {
+    "length": 1,
+    "begin": 8,
+    "end": 20
+  },
+  "rooms": [
+    { "CloneRoom":
+      {
+        "day": {
+          "length": 1,
+          "begin": 8,
+          "end": 20
+        },
+        "systems": [
+          {
+            "MainWater": {
+              "type": "EbbFlow",
+              "ports": {
+                "pump": [3, 0],
+                "ruler": [4, 0],
+                "temperature": [5, 0]
+              },
+              "schedule": {
+                "day": {
+                  "flow": 15,
+                  "ebb": 45
+                },
+                "night": {
+                  "flow": 15,
+                  "ebb": 105
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "systems": [
+    {
+      "MainLight": {
+        "type": "IndoorLight",
+        "ports": {
+          "lamp": [8, 0]
+        }
+      }
+    }, {
+      "MainAir": {
+        "type": "IndoorAir",
+        "ports": {
+          "dht": [7, 0],
+          "fan": [2, 0]
+        },
+        "schedule": {
+          "day": -1,
+          "night": {
+            "work": 5,
+            "sleep": 15
+          }
+        }
+      }
+    }
+  ],
+  "controllers": {
+    "0": 4
+  }
+}
