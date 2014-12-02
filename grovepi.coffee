@@ -29,8 +29,8 @@ module.exports = class GrovePI
 
 
 
-	send = ( data, args... ) ->
-		writeArgs = []
+	send = ( cmd, args... ) ->
+		writeArgs = [cmd]
 		if args[1]
 			data = args[0]
 			callback = args[1]
