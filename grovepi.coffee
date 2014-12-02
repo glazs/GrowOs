@@ -37,8 +37,8 @@ module.exports = class GrovePI
 		if args[1]
 			data = args[0]
 			callback = args[1]
-			writeArgs.push port
-			writeArgs.push length
+			writeArgs.push cmd
+			writeArgs.push data
 			writeCmd = 'writeBytes'
 		else
 			callback = args[0]
