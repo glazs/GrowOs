@@ -39,7 +39,7 @@ module.exports = class GrovePI
 		@wire = wire  if debug.mode
 
 
-	mode: (port, mode, callback) ->
+	mode: (port, mode, callback = ->) ->
 		if modes[port] isnt mode
 			modes[port] = mode
 			@send CMD.mode, port, [mode, 0], -> callback()
