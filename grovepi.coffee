@@ -40,9 +40,11 @@ module.exports = class GrovePI
 
 
 	mode: (port, mode, callback) ->
-		unless modes[port]? is mode
+		if modes[port] isnt mode
 			modes[port] = mode
 			@send CMD.mode, port, [mode, 0], -> callback()
+		else
+			callback()
 
 
 	send: ( cmd, port, args... ) ->
