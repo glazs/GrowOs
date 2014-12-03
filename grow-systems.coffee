@@ -4,6 +4,8 @@ Time = require './time'
 
 debug = new Debug 0
 
+Function::property = (prop, desc) ->
+	Object.defineProperty @prototype, prop, desc
 
 
 module.exports = class GrowSystems
@@ -32,18 +34,19 @@ module.exports = class GrowSystems
 			@state = lamp.state
 
 			@time = new Time @config.day
-			@time.every @config.day.begin, => @power 1
-			@time.every @config.day.end, => @power 0
-			@power @time.is 'day'
+			@time.every @config.day.begin, => @power = 1
+			@time.every @config.day.end, => @power = 0
+			@power = @time.is 'day'
 
 			@lamp = lamp  if debug.mode
 			debug.log "Init Light. Light is #{ debug.stateTxt[lamp.state] }"
 
-		power: (state) ->
+		@property 'power',
+			get: ->
+			set: (state) ->
+				lamp.power state
 
-			lamp.power state
-
-			debug.log "Light is #{ debug.stateTxt[lamp.state] }"
+				debug.log "Light is #{ debug.stateTxt[lamp.state] }"
 
 
 
