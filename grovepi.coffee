@@ -12,65 +12,103 @@ module.exports = class GrovePI
 
 	# ID команды на контроллере
 	CMD = 
-		analog:
-			read: 3
-			write: 4
-		digital:
-			read: 1
-			write: 2
+		analog_read: 3
+		analog_write: 4
+		digital_read: 1
+		digital_write: 2
 		mode: 5
 		ranger: 7
 		temperature: 40
 
+	modes = {}
+
+	MODES = {
+		input: 0
+		output: 1
+	}
+
+	getCmd = (id) -> 
+		for cmd, cmdId of CMD
+			if cmdId is id 
+				return cmd
+
 
 	constructor: (@address, @id) ->
 		wire = new i2c @address, device: "/dev/i2c-1" 
+
 		@wire = wire  if debug.mode
 
-	write: ( type, port, data, callback ) ->
-		data = [port].concat data
-		switch type
-			when 'digital'
-				writeCmd = if Array.isArray data then 'writeBytes' else 'writeByte'
-				wire[writeCmd] CMD.digital.write, data, ( error ) ->
-					callback()
-					debug.log "Digital write", CMD.digital.write, data
-					debug.log "ERROR:", error if error
-			when 'analog'
-				wire.writeByte CMD.analog.write, data,  ( error ) ->
-					callback()
-					debug.log "Analog write", CMD.analog.write, data
-					debug.log "ERROR:", error if error
-	read: ( type, args... ) ->
-		switch type
-			when 'digital'
-				isBlock = args[0]
-				callback = args[1]
-				readCmd = if isBlock then 'readBytes' else 'readByte'
-				wire.writeBytes CMD.digital.read, 0, ->
-					wire[readCmd] (error, data) ->
-						callback data
-						debug.log "Digital read", CMD.digital.read, data
-						debug.log "ERROR:", error if error
-			when 'analog'
-				callback = args[0]
-				wire.writeBytes CMD.analog.read, 0, ->
-					wire.readByte (err, data) ->
-						callback data
-						debug.log "Analog read", CMD.analog.read, data
-						debug.log "ERROR:", error if error
 
-	input: (callback) ->
-		wire.writeByte CMD.mode, 0, -> # Switch to input
-			callback() # Do what you want
-			wire.writeByte CMD.mode, 1, -> # Switch to output
+	mode: (port, mode, callback = ->) ->
+		if modes[port] isnt mode
+			modes[port] = mode
+			@send CMD.mode, port, [mode, 0], -> callback()
+		else
+			callback()
+
+
+	send: ( cmd, port, args... ) ->
+		writeArgs = [cmd]
+		if args[1]
+			data = args[0]
+			callback = args[1]
+			writeArgs.push [port].concat data
+			writeCmd = 'writeBytes'
+		else
+			writeArgs.push port
+			callback = args[0]
+			writeCmd = 'writeByte'
+
+		namedCmd = (getCmd cmd) + "(#{cmd})"
+
+		portAndData = [ 'to port', port ]
+		portAndData.push 'with data', data  if data
+
+		debug.log 'Send', namedCmd, portAndData...
+
+		writeArgs.push (error) ->
+			callback()
+			debug.log 'ERROR:', error  if error
+
+		wire[writeCmd] writeArgs...
+
+
+
+	receive: ( port, args... ) ->
+		readArgs = []
+		if args[1]
+			length = args[0]
+			callback = args[1]
+			readArgs.push port
+			readArgs.push length
+			readCmd = 'readBytes'
+		else
+			callback = args[0]
+			readCmd = 'readByte'
+
+		debug.log 'Receive from port', port
+		readArgs.push (error, data) ->
+			callback data
+			debug.log 'Received', (Array.prototype.slice.call data, 0)
+			debug.log 'ERROR:', error  if error
+
+		wire[readCmd] readArgs...
+
+	write: ( type, port, data, callback ) ->
+		@send CMD[type + '_write'], port, data, callback
+
+
+	read: ( type, args... ) ->
+		@send CMD[type + '_read'], args...
+
+	relay: ( port, state, callback ) ->
+
+
 
 	ranger: ( port, callback ) ->
-		wire.writeBytes CMD.ranger, [port,0,0], ->
-			wire.readBytes port, 3, (err, value) ->
-				callback value[2] + value[1]
+		@mode port, MODES.input, =>
+			@send CMD.ranger, port, [0,0], =>
+				@receive port, 3, (data) ->
 
-	# getinfo: ( callback ) ->
-	# 	wire.writeBytes 50, [0, 0, 0] ->
-	# 		wire.readByte ( err, byte ) -> callback byte
+				 	callback data[2] + data[1]
 

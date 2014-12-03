@@ -4,7 +4,7 @@ Time = require './time'
 fs = require 'fs'
 
 
-debug = new Debug 1
+debug = new Debug 0
 
 growConfig = JSON.parse fs.readFileSync 'config.json', 'utf8'
 
@@ -74,11 +74,10 @@ if false
 
 	time.interval 1/60, ->
 		grow.root.rooms.CloneRoom.systems.MainWater.level (range) =>
-			console.log range
 			if 100 > range > 0
 				if 2 < range < 10
 					pwr = on
-				else if 15 < range < 20
+				else if 11 < range < 17
 					pwr = off
 				else return
 				grow.root.systems.MainLight.power pwr
