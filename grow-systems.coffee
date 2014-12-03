@@ -2,7 +2,7 @@ Debug = require './debug'
 GroveModules = require './grove-modules'
 Time = require './time'
 
-debug = new Debug 1
+debug = new Debug 0
 
 Function::property = (prop, desc) ->
 	Object.defineProperty @prototype, prop, desc
@@ -121,8 +121,6 @@ module.exports = class GrowSystems
 			else
 				debug.log 'Going to Flow in ', schedule.ebb - fromEbb, 'min'
 				@time.delay schedule.ebb - fromEbb, => @planFlow()
-
-				
 
 
 		ebb: ->
