@@ -74,7 +74,6 @@ if true
 
 	time.interval 1/60, ->
 		grow.root.rooms.CloneRoom.systems.MainWater.level (range) =>
-			console.log range
 			if 100 > range > 0
 				if 2 < range < 10
 					pwr = on

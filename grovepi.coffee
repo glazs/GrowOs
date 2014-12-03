@@ -41,8 +41,6 @@ module.exports = class GrovePI
 			@send CMD.mode, port, [mode, 0], ->
 
 	send: ( cmd, port, args... ) ->
-		unless cmd is CMD.mode
-			@mode port, MODES.output
 		writeArgs = [cmd]
 		if args[1]
 			data = args[0]
@@ -64,6 +62,17 @@ module.exports = class GrovePI
 			debug.log 'ERROR:', error  if error
 
 		wire[writeCmd] writeArgs...
+
+	sendWithMode: (cmd, port) ->
+		args = arguments
+		@mode port, MODES.output =>
+			@send args...
+
+	receiveWithMode: (cmd, port) ->
+		args = arguments
+		@mode port, MODES.input =>
+			@send args...
+
 
 
 	receive: ( port, args... ) ->
@@ -88,13 +97,13 @@ module.exports = class GrovePI
 		wire[readCmd] readArgs...
 
 	write: ( type, port, data, callback ) ->
-		@send CMD[type].write, port, data, callback
+		@sendWithMode CMD[type].write, port, data, callback
 
 	read: ( type, args... ) ->
-		@send CMD[type].read, args...
+		@sendWithMode CMD[type].read, args...
 
 	ranger: ( port, callback ) ->
-		@send CMD.ranger, port, [0,0], =>
-			@receive port, 3, (data) ->
+		@sendWithMode CMD.ranger, port, [0,0], =>
+			@receiveWithMode port, 3, (data) ->
 				callback data[2] + data[1]
 
