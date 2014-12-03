@@ -109,6 +109,7 @@ module.exports = class GrowSystems
 				@ebb()
 				@planFlow()
 			else
+				debug.log 'Going to Ebb in ', schedule.flow - fromFlow, 'min'
 				@time.delay schedule.flow - fromFlow, => planEbb()
 
 		planFlow: ->
@@ -118,6 +119,7 @@ module.exports = class GrowSystems
 				@flow()
 				@planEbb()
 			else
+				debug.log 'Going to Flow in ', schedule.ebb - fromEbb, 'min'
 				@time.delay schedule.ebb - fromEbb, => planFlow()
 
 				
