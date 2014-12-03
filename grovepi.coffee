@@ -103,7 +103,7 @@ module.exports = class GrovePI
 	receiveWithMode: (port) ->
 		args = arguments
 		console.log( args )
-		@mode port, MODES.input, => @send args...
+		@mode port, MODES.input, => @receive args...
 
 
 	write: ( type, port, data, callback ) ->
