@@ -65,13 +65,11 @@ module.exports = class GrovePI
 
 	sendWithMode: (cmd, port) ->
 		args = arguments
-		@mode port, MODES.output =>
-			@send args...
+		@mode port, MODES.output, => @send args...
 
 	receiveWithMode: (cmd, port) ->
 		args = arguments
-		@mode port, MODES.input =>
-			@send args...
+		@mode port, MODES.input, => @send args...
 
 
 
