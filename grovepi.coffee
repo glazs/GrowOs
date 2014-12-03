@@ -55,12 +55,12 @@ module.exports = class GrovePI
 			callback = args[0]
 			writeCmd = 'writeByte'
 
-		namedCmd = (getCmd cmd) + "[#{cmd}]"
+		namedCmd = (getCmd cmd) + "(#{cmd})"
 
 		portAndData = [ 'to port', port ]
 		portAndData.push 'with data', data  if data
 
-		debug.log 'Send', namedCmd, portAndData
+		debug.log 'Send', namedCmd, portAndData...
 
 		writeArgs.push (error) ->
 			callback()
