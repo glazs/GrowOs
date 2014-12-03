@@ -12,12 +12,10 @@ module.exports = class GrovePI
 
 	# ID команды на контроллере
 	CMD = 
-		analog:
-			read: 3
-			write: 4
-		digital:
-			read: 1
-			write: 2
+		analog_read: 3
+		andlog_write: 4
+		digital_read: 1
+		digital_write: 2
 		mode: 5
 		ranger: 7
 		temperature: 40
@@ -28,6 +26,8 @@ module.exports = class GrovePI
 		input: 0
 		output: 1
 	}
+
+	getCmd = (id) -> cmd  if cmdId is id  for cmd, cmdId of CMD
 
 
 	constructor: (@address, @id) ->
@@ -52,7 +52,7 @@ module.exports = class GrovePI
 			callback = args[0]
 			writeCmd = 'writeByte'
 
-		cmdAndData = [cmd]
+		cmdAndData = [ (getCmd cmd) + "[#{cmd}]" ]
 		cmdAndData.push data  if data
 
 		debug.log 'Send', cmdAndData..., 'to port', port
@@ -95,10 +95,10 @@ module.exports = class GrovePI
 		wire[readCmd] readArgs...
 
 	write: ( type, port, data, callback ) ->
-		@sendWithMode CMD[type].write, port, data, callback
+		@sendWithMode CMD[type + '_write'], port, data, callback
 
 	read: ( type, args... ) ->
-		@sendWithMode CMD[type].read, args...
+		@sendWithMode CMD[type + '_read'], args...
 
 	ranger: ( port, callback ) ->
 		@sendWithMode CMD.ranger, port, [0,0], =>
