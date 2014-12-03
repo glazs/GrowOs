@@ -2,7 +2,7 @@ Debug = require './debug'
 i2c = require 'i2c'
 #sync = require 'sync'
 
-debug = new Debug 1
+debug = new Debug 0
 
 
 

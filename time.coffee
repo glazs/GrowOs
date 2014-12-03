@@ -39,7 +39,7 @@ module.exports = class Time
 		hours = hours.getHours() + hours.getMinutes() / 60
 		begin = @config.begin
 		end = @config.end
-		console.log begin, hours, end
+		#console.log begin, hours, end
 		if begin > end
 			begin -= 24
 		isDay = begin < hours < end

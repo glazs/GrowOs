@@ -42,9 +42,10 @@ module.exports = class GrowSystems
 			debug.log "Init Light. Light is #{ debug.stateTxt[lamp.state] }"
 
 		@property 'power',
-			get: ->
+			get: -> @state
 			set: (state) ->
 				lamp.power state
+				@state = state
 
 				debug.log "Light is #{ debug.stateTxt[lamp.state] }"
 
