@@ -22,14 +22,23 @@ module.exports = class GrovePI
 		ranger: 7
 		temperature: 40
 
+	modes = {}
+
+	MODES = {
+		input: 0
+		output: 1
+	}
+
 
 	constructor: (@address, @id) ->
 		wire = new i2c @address, device: "/dev/i2c-1" 
+
 		@wire = wire  if debug.mode
 
 
-
 	send = ( cmd, port, args... ) ->
+		unless cmd is CMD.mode
+			@mode port, MODES.output
 		writeArgs = [cmd]
 		if args[1]
 			data = args[0]
@@ -41,6 +50,8 @@ module.exports = class GrovePI
 			callback = args[0]
 			writeCmd = 'writeByte'
 
+		callback ?= ->
+
 		writeArgs.push (error) ->
 			callback()
 			debug.log "Send", data, 'to port', port
@@ -50,6 +61,7 @@ module.exports = class GrovePI
 
 
 	receive = ( port, args... ) ->
+		@mode port, MODES.input
 		readArgs = []
 		if args[1]
 			length = args[0]
@@ -68,16 +80,16 @@ module.exports = class GrovePI
 
 		wire[readCmd] readArgs...
 
+	mode: (port, mode, callback) ->
+		unless modes[port]? is mode
+			modes[port] = mode
+			send CMD.ranger, port, mode
+
 	write: ( type, port, data, callback ) ->
 		send CMD[type].write, port, data, callback
 
 	read: ( type, args... ) ->
 		send CMD[type].read, args...
-
-	input: (callback) ->
-		wire.writeByte CMD.mode, 0, -> # Switch to input
-			callback() # Do what you want
-			wire.writeByte CMD.mode, 1, -> # Switch to output
 
 	ranger: ( port, callback ) ->
 		send CMD.ranger, port, [0,0], ->
