@@ -56,7 +56,10 @@ module.exports = class GrovePI
 
 		callback ?= ->
 
-		debug.log 'Send', cmd, data, 'to port', port
+		cmdAndData = [cmd]
+		cmdAndData.push [data] if data
+
+		debug.log 'Send', cmdAndData, 'to port', port
 
 		writeArgs.push (error) ->
 			callback()
