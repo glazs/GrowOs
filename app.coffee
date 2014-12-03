@@ -69,7 +69,7 @@ time.interval 60, ->
 #  	console.log time.now()
 # ), 1000
 
-if true
+if false
 	time = new Time
 
 	time.interval 1/60, ->
