@@ -40,7 +40,7 @@ module.exports = class GrovePI
 			modes[port] = mode
 			send CMD.ranger, port, mode
 
-	send = ( cmd, port, args... ) ->
+	send = ( cmd, port, args... ) =>
 		unless cmd is CMD.mode
 			@mode port, MODES.output
 		writeArgs = [cmd]
