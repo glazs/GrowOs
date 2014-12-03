@@ -35,6 +35,10 @@ module.exports = class GrovePI
 
 		@wire = wire  if debug.mode
 
+	mode: (port, mode, callback) ->
+		unless modes[port]? is mode
+			modes[port] = mode
+			send CMD.ranger, port, mode
 
 	send = ( cmd, port, args... ) ->
 		unless cmd is CMD.mode
@@ -79,11 +83,6 @@ module.exports = class GrovePI
 			debug.log "ERROR:", error if error
 
 		wire[readCmd] readArgs...
-
-	mode: (port, mode, callback) ->
-		unless modes[port]? is mode
-			modes[port] = mode
-			send CMD.ranger, port, mode
 
 	write: ( type, port, data, callback ) ->
 		send CMD[type].write, port, data, callback
