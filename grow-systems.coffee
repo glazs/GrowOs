@@ -93,7 +93,7 @@ module.exports = class GrowSystems
 			@flowStart ?= new Date 1 #TODO replace with real data from db
 			@ebbStart ?= new Date 1
 
-			planEbb()
+			@planEbb()
 
 			@pump = pump  if debug.mode
 			@ruler = ruler  if debug.mode
