@@ -7,7 +7,7 @@ module.exports = class Time
 
 	constructor: (@config = {}) ->
 		@factor = @config.length or 1
-		@from = @config.start or new Date
+		@start = @config.start or new Date
 
 	delay: (min, callback) ->
 		setTimeout callback, Math.round min * 1000*60 * @factor
@@ -29,11 +29,17 @@ module.exports = class Time
 
 	elapsed: ->
 		new Date 1 / @factor * (
-			(new Date).getTime() - @from.getTime()
+			(new Date).getTime() - @start.getTime()
 		)
 
 	now: ->
-		new Date @from.getTime() + @elapsed().getTime()
+		new Date @start.getTime() + @elapsed().getTime()
+
+	from: (date) ->
+		( @now().getTime() - date.getTime() ) / 100 / 60
+
+
+
 	is: (daytime) ->
 		hours = @now()
 		hours = hours.getHours() + hours.getMinutes() / 60

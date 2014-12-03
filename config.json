@@ -23,12 +23,12 @@
               },
               "schedule": {
                 "day": {
-                  "flow": 15,
-                  "ebb": 45
+                  "ebb": 15,
+                  "flow": 45
                 },
                 "night": {
-                  "flow": 15,
-                  "ebb": 105
+                  "ebb": 15,
+                  "flow": 105
                 }
               }
             }
