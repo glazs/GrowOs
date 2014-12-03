@@ -1,7 +1,7 @@
 Debug = require './debug'
 GrovePI = require './grovepi'
 
-debug = new Debug 1
+debug = new Debug 0
 
 
 
