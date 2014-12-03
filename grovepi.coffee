@@ -75,25 +75,25 @@ module.exports = class GrovePI
 
 
 	receive: ( port, args... ) ->
-		@mode port, MODES.input
-		readArgs = []
-		if args[1]
-			length = args[0]
-			callback = args[1]
-			readArgs.push port
-			readArgs.push length
-			readCmd = 'readBytes'
-		else
-			callback = args[0]
-			readCmd = 'readByte'
+		@mode port, MODES.input, ->
+			readArgs = []
+			if args[1]
+				length = args[0]
+				callback = args[1]
+				readArgs.push port
+				readArgs.push length
+				readCmd = 'readBytes'
+			else
+				callback = args[0]
+				readCmd = 'readByte'
 
-		debug.log 'Receive from port', port
-		readArgs.push (error, data) ->
-			callback data
-			debug.log 'Received', (Array.prototype.slice.call data, 0)
-			debug.log 'ERROR:', error  if error
+			debug.log 'Receive from port', port
+			readArgs.push (error, data) ->
+				callback data
+				debug.log 'Received', (Array.prototype.slice.call data, 0)
+				debug.log 'ERROR:', error  if error
 
-		wire[readCmd] readArgs...
+			wire[readCmd] readArgs...
 
 
 
