@@ -13,7 +13,7 @@ module.exports = class GrovePI
 	# ID команды на контроллере
 	CMD = 
 		analog_read: 3
-		andlog_write: 4
+		analog_write: 4
 		digital_read: 1
 		digital_write: 2
 		mode: 5
