@@ -84,10 +84,10 @@ module.exports = class GrowSystems
 
 			@state = pump.state
 
-			@time = new Time @config.day
-			@ebb()
-			@time.delay 3/60, =>
-				@flow()
+			# @time = new Time @config.day
+			# @ebb()
+			# @time.delay 3/60, =>
+			# 	@flow()
 			# @time.every @config.day.begin, => @power 1
 			# @time.every @config.day.end, => @power 0
 
