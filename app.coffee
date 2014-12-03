@@ -4,7 +4,7 @@ Time = require './time'
 fs = require 'fs'
 
 
-debug = new Debug 1
+debug = new Debug 0
 
 growConfig = JSON.parse fs.readFileSync 'config.json', 'utf8'
 
