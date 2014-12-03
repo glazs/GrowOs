@@ -80,4 +80,4 @@ if false
 				else if 11 < range < 17
 					pwr = off
 				else return
-				grow.root.systems.MainLight.power pwr
+				grow.root.systems.MainLight.power = pwr

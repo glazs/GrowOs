@@ -4,6 +4,8 @@ Time = require './time'
 
 debug = new Debug 0
 
+Function::property = (prop, desc) ->
+	Object.defineProperty @prototype, prop, desc
 
 
 module.exports = class GrowSystems
@@ -32,18 +34,20 @@ module.exports = class GrowSystems
 			@state = lamp.state
 
 			@time = new Time @config.day
-			@time.every @config.day.begin, => @power 1
-			@time.every @config.day.end, => @power 0
-			@power @time.is 'day'
+			@time.every @config.day.begin, => @power = 1
+			@time.every @config.day.end, => @power = 0
+			@power = @time.is 'day'
 
 			@lamp = lamp  if debug.mode
 			debug.log "Init Light. Light is #{ debug.stateTxt[lamp.state] }"
 
-		power: (state) ->
+		@property 'power',
+			get: -> @state
+			set: (state) ->
+				lamp.power state
+				@state = state
 
-			lamp.power state
-
-			debug.log "Light is #{ debug.stateTxt[lamp.state] }"
+				debug.log "Light is #{ debug.stateTxt[lamp.state] }"
 
 
 
@@ -84,13 +88,12 @@ module.exports = class GrowSystems
 
 			@state = pump.state
 
-			# @time = new Time @config.day
-			# @ebb()
-			# @time.delay 3/60, =>
-			# 	@flow()
-			# @time.every @config.day.begin, => @power 1
-			# @time.every @config.day.end, => @power 0
+			@time = new Time @config.day
 
+			@flowStart ?= new Date 1 #TODO replace with real data from db
+			@ebbStart ?= new Date 1
+
+			@planEbb()
 
 			@pump = pump  if debug.mode
 			@ruler = ruler  if debug.mode
@@ -99,10 +102,33 @@ module.exports = class GrowSystems
 		level: (callback) ->
 			ruler.measure (value) -> callback value
 
+		planEbb: ->
+			fromFlow = @time.from( @flowStart )
+			schedule = if @time.is 'day' then @config.schedule.day else @config.schedule.night
+			if fromFlow >= schedule.flow
+				@ebb()
+				@planFlow()
+			else
+				debug.log 'Going to Ebb in ', schedule.flow - fromFlow, 'min'
+				@time.delay schedule.flow - fromFlow, => @planEbb()
+
+		planFlow: ->
+			fromEbb = @time.from( @ebbStart )
+			schedule = if @time.is 'day' then @config.schedule.day else @config.schedule.night
+			if fromEbb >= schedule.ebb
+				@flow()
+				@planEbb()
+			else
+				debug.log 'Going to Flow in ', schedule.ebb - fromEbb, 'min'
+				@time.delay schedule.ebb - fromEbb, => @planFlow()
+
+
 		ebb: ->
+			@ebbStart = @time.now()
 			pump.power 1
 			debug.log "EbbFlow system going to #{ STATE[pump.state] }"
 
 		flow: -> 
+			@flowStart = @time.now()
 			pump.power 0
 			debug.log "EbbFlow system going to #{ STATE[pump.state] }"
