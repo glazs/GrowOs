@@ -77,7 +77,7 @@ if true
 			if 100 > range > 0
 				if 2 < range < 10
 					pwr = on
-				else if 15 < range < 20
+				else if 11 < range < 17
 					pwr = off
 				else return
 				grow.root.systems.MainLight.power pwr
