@@ -27,7 +27,11 @@ module.exports = class GrovePI
 		output: 1
 	}
 
-	getCmd = (id) -> cmd  if cmdId is id  for cmd, cmdId of CMD
+	getCmd = (id) ->
+		for cmd, cmdId of CMD
+			if cmdId is id  
+				break
+				cmd
 
 
 	constructor: (@address, @id) ->
