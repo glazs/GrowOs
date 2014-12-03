@@ -117,7 +117,7 @@ module.exports = class GrovePI
 
 	ranger: ( port, callback ) ->
 		@mode port, MODES.input, =>
-			@sent CMD.ranger, port, [0,0], =>
+			@send CMD.ranger, port, [0,0], =>
 				@receive port, 3, (data) ->
 
 				 	callback data[2] + data[1]
