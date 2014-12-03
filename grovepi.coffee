@@ -38,7 +38,7 @@ module.exports = class GrovePI
 	mode: (port, mode, callback) ->
 		unless modes[port]? is mode
 			modes[port] = mode
-			@send CMD.mode, port, [mode, 0]
+			@send CMD.mode, port, [mode, 0], ->
 
 	send: ( cmd, port, args... ) ->
 		unless cmd is CMD.mode
@@ -54,12 +54,10 @@ module.exports = class GrovePI
 			callback = args[0]
 			writeCmd = 'writeByte'
 
-		callback ?= ->
-
 		cmdAndData = [cmd]
 		cmdAndData.push data  if data
 
-		debug.log 'Send', cmdAndData, 'to port', port
+		debug.log 'Send', cmdAndData..., 'to port', port
 
 		writeArgs.push (error) ->
 			callback()
