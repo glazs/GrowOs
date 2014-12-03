@@ -102,6 +102,7 @@ module.exports = class GrovePI
 
 
 	receiveWithMode: (port) ->
+		console.log( args )
 		args = arguments
 		@mode port, MODES.input, => @send args...
 
@@ -116,7 +117,7 @@ module.exports = class GrovePI
 
 	ranger: ( port, callback ) ->
 		@sendWithMode CMD.ranger, port, [0,0], =>
-			# @receiveWithMode 3, (data) ->
+			@receiveWithMode 3, (data) ->
 
 			# 	callback data[2] + data[1]
 
