@@ -94,25 +94,15 @@ module.exports = class GrovePI
 
 		wire[readCmd] readArgs...
 
-
-
-	sendWithMode: (cmd, port) ->
-		args = arguments
-		@mode port, MODES.output, => @send args...
-
-
-	receiveWithMode: (port) ->
-		args = arguments
-		console.log( args )
-		@mode port, MODES.input, => @receive args...
-
-
 	write: ( type, port, data, callback ) ->
-		@sendWithMode CMD[type + '_write'], port, data, callback
+		@send CMD[type + '_write'], port, data, callback
 
 
 	read: ( type, args... ) ->
-		@sendWithMode CMD[type + '_read'], args...
+		@send CMD[type + '_read'], args...
+
+	relay: ( port, state, callback ) ->
+
 
 
 	ranger: ( port, callback ) ->

@@ -50,9 +50,10 @@ module.exports = class Modules
 						if @state then 1 else 0 # вкл выкл
 						0 # хуй знает чо за ноль
 					]
-					controller.write 'digital', @port, bytes, => # команда, данные, коллбэк
-						callback @state  if callback
-						debug.log "Relay #{@port} of controller #{controller.id} is #{debug.stateTxt[@state]}"
+					controller.mode port, 0, =>
+						controller.write 'digital', @port, bytes, => # команда, данные, коллбэк
+							callback @state  if callback
+							debug.log "Relay #{@port} of controller #{controller.id} is #{debug.stateTxt[@state]}"
 				else
 					callback @state if callback
 					debug.log "Relay on port #{@port} of controller #{controller.id} is #{ debug.stateTxt[@state] }. No changes."
