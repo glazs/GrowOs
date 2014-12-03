@@ -7,11 +7,6 @@
   "rooms": [
     { "CloneRoom":
       {
-        "day": {
-          "length": 1,
-          "begin": 8,
-          "end": 20
-        },
         "systems": [
           {
             "MainWater": {
@@ -23,12 +18,12 @@
               },
               "schedule": {
                 "day": {
-                  "flow": 15,
-                  "ebb": 45
+                  "ebb": 15,
+                  "flow": 45
                 },
                 "night": {
-                  "flow": 15,
-                  "ebb": 105
+                  "ebb": 15,
+                  "flow": 105
                 }
               }
             }
