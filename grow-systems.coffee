@@ -66,7 +66,13 @@ module.exports = class GrowSystems
 			@fan = fan  if debug.mode
 			debug.log "Init Air. Fan is #{ debug.stateTxt[fan.state] }"
 
-		power: (state) -> fan.power state
+		@property 'power',
+			get: -> @state
+			set: (state) ->
+				fan.power state
+				@state = state
+
+				debug.log "Fan is #{ debug.stateTxt[lamp.state] }"
 
 
 
