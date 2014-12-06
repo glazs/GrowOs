@@ -111,22 +111,22 @@ module.exports = class GrowSystems
 		planEbb: ->
 			fromFlow = @time.from( @flowStart )
 			schedule = if @time.is 'day' then @config.schedule.day else @config.schedule.night
-			if fromFlow >= schedule.flow
+			if fromFlow >= schedule.off
 				@ebb()
 				@planFlow()
 			else
-				debug.log 'Going to Ebb in ', schedule.flow - fromFlow, 'min'
-				@time.delay schedule.flow - fromFlow, => @planEbb()
+				debug.log 'Going to Ebb in ', schedule.off - fromFlow, 'min'
+				@time.delay schedule.off - fromFlow, => @planEbb()
 
 		planFlow: ->
 			fromEbb = @time.from( @ebbStart )
 			schedule = if @time.is 'day' then @config.schedule.day else @config.schedule.night
-			if fromEbb >= schedule.ebb
+			if fromEbb >= schedule.on
 				@flow()
 				@planEbb()
 			else
-				debug.log 'Going to Flow in ', schedule.ebb - fromEbb, 'min'
-				@time.delay schedule.ebb - fromEbb, => @planFlow()
+				debug.log 'Going to Flow in ', schedule.on - fromEbb, 'min'
+				@time.delay schedule.on - fromEbb, => @planFlow()
 
 
 		ebb: ->
