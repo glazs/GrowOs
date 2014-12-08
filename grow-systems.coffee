@@ -56,7 +56,7 @@ module.exports = class GrowSystems
 		fan = 0
 		dht = 0
 		subState = 0 # for speed control using relay
-		cycleLength = 1/60*3 # for speed control using relay
+		cycleLength = 1/60*2 # for speed control using relay
 
 		constructor: (@config) ->
 
@@ -67,7 +67,7 @@ module.exports = class GrowSystems
 			@time = new Time length: 1 #time for speed control
 
 			@state.power = fan.state
-			@state.speed = .3 #TODO remove
+			@state.speed = .8 #TODO remove
 
 			@power = 1 #run fan
 
@@ -75,7 +75,7 @@ module.exports = class GrowSystems
 			debug.log "Init Air. Fan is #{ debug.stateTxt[@state.power] }"
 
 		controlSpeed: ->
-			return  unless @state.power
+			return  if @state.power is off or @state.speed is 1
 
 			minStep = 1/60 * .33 # 1/3s min relay switch time
 			delay = cycleLength * @state.speed
