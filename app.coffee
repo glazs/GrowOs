@@ -39,7 +39,7 @@ class Grow
 				system.day ?= config.day
 				root.systems[systemName] = new growSystems.init system
 				systems.push root.systems[systemName]
-	down = ->
+	down: ->
 		for system in systems
 			system.power = off  if system.power?
 		process.exit()
