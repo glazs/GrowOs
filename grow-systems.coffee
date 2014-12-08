@@ -74,7 +74,7 @@ module.exports = class GrowSystems
 			@fan = fan  if debug.mode
 			debug.log "Init Air. Fan is #{ debug.stateTxt[@state.power] }"
 
-		controlSpeed = () =>
+		controlSpeed: ->
 			return  unless @state.power
 
 			minStep = 1/60 * .33 # 1/3s min relay switch time
@@ -92,7 +92,7 @@ module.exports = class GrowSystems
 			set: (state) ->
 				fan.power state
 				@state.power = state
-				controlSpeed()
+				@controlSpeed()
 
 				debug.log "Fan is #{ debug.stateTxt[@state.power] }"
 
