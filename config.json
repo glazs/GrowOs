@@ -18,12 +18,12 @@
               },
               "schedule": {
                 "day": {
-                  "ebb": 15,
-                  "flow": 45
+                  "on": 15,
+                  "off": 45
                 },
                 "night": {
-                  "ebb": 15,
-                  "flow": 105
+                  "on": 15,
+                  "off": 105
                 }
               }
             }
@@ -48,10 +48,10 @@
           "fan": [2, 0]
         },
         "schedule": {
-          "day": -1,
+          "day": 1,
           "night": {
-            "work": 5,
-            "sleep": 15
+            "on": 5,
+            "off": 15
           }
         }
       }

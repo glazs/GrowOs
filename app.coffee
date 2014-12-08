@@ -14,6 +14,7 @@ class Grow
 
 	growSystems = 0
 	root: {}
+	systems = []
 
 	constructor: (@config) ->
 
@@ -36,12 +37,25 @@ class Grow
 		for systemConfig in config.systems
 			for systemName, system of systemConfig
 				system.day ?= config.day
-				root.systems[systemName] = new growSystems.init system
+				root.systems[systemName] = growSystems.init system
+				systems.push root.systems[systemName]
+	down: ->
+		for system in systems
+			system.power = off  if system.power?
+		process.exit()
 
 
 grow = new Grow growConfig
 
 
+# cleanup on exit
+process.stdin.resume()
+#do something when app is closing
+process.on "exit", grow.down
+#catches ctrl+c event
+process.on "SIGINT", grow.down
+#catches uncaught exceptions
+process.on "uncaughtException", grow.down
 
 
 ############### TEST SHIT:
