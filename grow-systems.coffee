@@ -42,7 +42,7 @@ module.exports = class GrowSystems
 			debug.log "Init Light. Light is #{ debug.stateTxt[lamp.state] }"
 
 		@property 'power',
-			get: -> @state
+			get: -> @state or 0
 			set: (state) ->
 				lamp.power state
 				@state = state
@@ -88,7 +88,7 @@ module.exports = class GrowSystems
 
 
 		@property 'power',
-			get: -> @state.power
+			get: -> @state.power or 0
 			set: (state) ->
 				fan.power state
 				@state.power = state
@@ -167,3 +167,9 @@ module.exports = class GrowSystems
 			@flowStart = @time.now()
 			pump.power 0
 			debug.log "EbbFlow system going to #{ STATE[pump.state] }"
+
+		@property 'power',
+			get: -> pump.power or 0
+			set: (state) ->
+				pump.power state
+				@state = state
