@@ -69,7 +69,7 @@ module.exports = class GrowSystems
 			@state.power = fan.state
 			@state.speed = .3 #TODO remove
 
-			@power 1 #run fan
+			@power = 1 #run fan
 
 			@fan = fan  if debug.mode
 			debug.log "Init Air. Fan is #{ debug.stateTxt[@state.power] }"
