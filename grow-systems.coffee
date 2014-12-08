@@ -55,24 +55,51 @@ module.exports = class GrowSystems
 
 		fan = 0
 		dht = 0
+		subState = 0 # for speed control using relay
+		cycleLength = 1/60*3 # for speed control using relay
 
 		constructor: (@config) ->
 
 			fan = new grove.Relay @config.ports.fan
 			dht = new grove.Dht @config.ports.dht
+			@state = {}
 
-			@state = fan.state
+			@time = new Time length: 1 #time for speed control
+
+			@state.power = fan.state
+			@state.speed = .3 #TODO remove
 
 			@fan = fan  if debug.mode
-			debug.log "Init Air. Fan is #{ debug.stateTxt[fan.state] }"
+			debug.log "Init Air. Fan is #{ debug.stateTxt[@state.power] }"
+
+		controlSpeed = () =>
+			return  unless @state.power
+
+			minStep = 1/60 * .33 # 1/3s min relay switch time
+			delay = cycleLength * @state.speed
+			delay = cycleLength - delay if subState
+			delay = Math.max delay, minStep
+			time.delay delay, =>
+				subState = !subState
+				fan.power subState
+				controlSpeed()
+
 
 		@property 'power',
-			get: -> @state
+			get: -> @state.power
 			set: (state) ->
 				fan.power state
-				@state = state
+				@state.power = state
+				controlSpeed  if state # 3s cycle
 
-				debug.log "Fan is #{ debug.stateTxt[lamp.state] }"
+				debug.log "Fan is #{ debug.stateTxt[@state.power] }"
+
+		@property 'speed',
+			get: -> @state.speed
+			set: (state) ->
+				@state.speed = state
+
+				debug.log "Fan speed is #{ @state.speed * 100 }%"
 
 
 
