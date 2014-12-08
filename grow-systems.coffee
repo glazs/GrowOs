@@ -84,7 +84,7 @@ module.exports = class GrowSystems
 			@time.delay delay, =>
 				subState = !subState
 				fan.power subState
-				controlSpeed()
+				@controlSpeed()
 
 
 		@property 'power',
