@@ -79,7 +79,7 @@ module.exports = class GrowSystems
 
 			minStep = 1/60 * .33 # 1/3s min relay switch time
 			delay = cycleLength * @state.speed
-			delay = cycleLength - delay if subState
+			delay = cycleLength - delay unless subState
 			delay = Math.max delay, minStep
 			@time.delay delay, =>
 				subState = !subState
