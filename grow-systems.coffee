@@ -81,7 +81,7 @@ module.exports = class GrowSystems
 			delay = cycleLength * @state.speed
 			delay = cycleLength - delay if subState
 			delay = Math.max delay, minStep
-			time.delay delay, =>
+			@time.delay delay, =>
 				subState = !subState
 				fan.power subState
 				controlSpeed()
