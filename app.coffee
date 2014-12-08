@@ -37,7 +37,7 @@ class Grow
 		for systemConfig in config.systems
 			for systemName, system of systemConfig
 				system.day ?= config.day
-				root.systems[systemName] = new growSystems.init system
+				root.systems[systemName] = growSystems.init system
 				systems.push root.systems[systemName]
 	down: ->
 		for system in systems
