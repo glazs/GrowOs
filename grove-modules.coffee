@@ -4,7 +4,6 @@ GrovePI = require './grovepi'
 debug = new Debug 0
 
 
-
 module.exports = class Modules
 
 	# объявляем тут, чтоб было видно в методах
@@ -12,6 +11,12 @@ module.exports = class Modules
 	CMD = 0
 	controllers = 0
 
+	modules: {}
+
+	initModule: ( module, ports ) =>
+		return error: 'No module'  unless module
+		@modules[ ports[0] ] ?= {}
+		@modules[ ports[0] ][ ports[1] ] ?= new @[module] ports
 
 	constructor: (ports) ->
 
@@ -28,6 +33,8 @@ module.exports = class Modules
 	Relay: class
 
 		controller = controllers[0]
+
+		type: 'relay'
 
 		constructor: (@port) -> 
 
@@ -66,6 +73,8 @@ module.exports = class Modules
 
 	# Класс для чтения линейки
 	Ruler: class 
+
+		type: 'ruler'
 
 		controller = controllers[0]
 

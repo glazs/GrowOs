@@ -32,6 +32,7 @@ class Grow
 
 		@growSystems = growSystems if debug.mode
 		debug.log 'All Systems initalized'
+		debug.dir @root
 	initSystems: (config, root) ->
 		root.systems = []
 		for systemConfig in config.systems
