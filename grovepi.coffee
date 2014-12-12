@@ -36,7 +36,15 @@ module.exports = class GrovePI
 	constructor: (@address, @id) ->
 		wire = new i2c @address, device: "/dev/i2c-1" 
 
+		# Use fake API if no controller found
+		@fake = wire.address?
+
 		@wire = wire  if debug.mode
+		debug.log "Connecting to controller with address #{@address}."
+		if @fake
+			debug.log "Fail: Using fake api; can't connect to controller"
+		else
+			debug.log 'Connected'
 
 
 	mode: (port, mode, callback = ->) ->
@@ -70,7 +78,10 @@ module.exports = class GrovePI
 			callback()
 			debug.log 'ERROR:', error  if error
 
-		wire[writeCmd] writeArgs...
+		unless @fake
+			wire[writeCmd] writeArgs...
+		else
+			callback()
 
 
 
@@ -92,7 +103,10 @@ module.exports = class GrovePI
 			debug.log 'Received', (Array.prototype.slice.call data, 0)
 			debug.log 'ERROR:', error  if error
 
-		wire[readCmd] readArgs...
+		unless @fake
+			wire[readCmd] readArgs...
+		else
+			callback()
 
 	write: ( type, port, data, callback ) ->
 		@send CMD[type + '_write'], port, data, callback

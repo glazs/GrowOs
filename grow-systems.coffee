@@ -29,7 +29,7 @@ module.exports = class GrowSystems
 
 		constructor: (@config) ->
 
-			lamp = new grove.Relay @config.ports.lamp
+			lamp = new grove.initModule 'Relay', @config.ports.lamp
 
 			@state = lamp.state
 
@@ -63,8 +63,8 @@ module.exports = class GrowSystems
 
 		constructor: (@config) ->
 
-			fan = new grove.Relay @config.ports.fan
-			dht = new grove.Dht @config.ports.dht
+			fan = grove.initModule 'Relay', @config.ports.fan
+			dht = grove.Dht @config.ports.dht
 			@state = {}
 
 			@time = new Time length: 1 #time for speed control
@@ -127,8 +127,8 @@ module.exports = class GrowSystems
 
 		constructor: (@config) ->
 
-			pump = new grove.Relay @config.ports.pump
-			ruler = new grove.Ruler @config.ports.ruler  if @config.ports.ruler
+			pump = grove.initModule 'Relay', @config.ports.pump
+			ruler = grove.initModule 'Ruler', @config.ports.ruler  if @config.ports.ruler
 
 			@state = pump.state
 
