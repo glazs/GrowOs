@@ -1,0 +1,3 @@
+[submodule "Salad"]
+	path = Salad
+	url = git@github.com:Mezozoysky/salad.git
