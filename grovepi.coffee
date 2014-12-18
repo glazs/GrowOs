@@ -12,12 +12,12 @@ module.exports = class GrovePI
 
 	# ID команды на контроллере
 	CMD = 
-		analog_read: 3
-		analog_write: 4
-		digital_read: 1
-		digital_write: 2
-		mode: 5
-		ranger: 7
+		analog_read: 4
+		analog_write: 5
+		digital_read: 2
+		digital_write: 3
+		mode: 6
+		ranger: 101
 		temperature: 40
 
 	modes = {}
@@ -50,7 +50,7 @@ module.exports = class GrovePI
 	mode: (port, mode, callback = ->) ->
 		if modes[port] isnt mode
 			modes[port] = mode
-			@send CMD.mode, port, [mode, 0], -> callback()
+			@send CMD.mode, port, mode, -> callback()
 		else
 			callback()
 
@@ -70,7 +70,7 @@ module.exports = class GrovePI
 		namedCmd = (getCmd cmd) + "(#{cmd})"
 
 		portAndData = [ 'to port', port ]
-		portAndData.push 'with data', data  if data
+		portAndData.push 'with data', data  if data?
 
 		debug.log 'Send', namedCmd, portAndData...
 
@@ -117,12 +117,10 @@ module.exports = class GrovePI
 
 	relay: ( port, state, callback ) ->
 
-
-
 	ranger: ( port, callback ) ->
 		@mode port, MODES.input, =>
-			@send CMD.ranger, port, [0,0], =>
-				@receive port, 3, (data) ->
+			@send CMD.ranger, port, =>
+				@receive port, 2, (data) ->
 
-				 	callback data[2] + data[1]
+				 	callback data[1] + data[0]
 
