@@ -52,9 +52,9 @@ module.exports = class Modules
 			if state?
 
 				if @state isnt state
-					@state = state
+					@state = if state then 1 else 0
 					controller.mode @port, 1, =>
-						controller.write 'digital', @port, (if @state then 1 else 0), => # команда, данные, коллбэк
+						controller.write 'digital', @port, @state, => # команда, данные, коллбэк
 							callback @state  if callback
 							debug.log "Relay #{@port} of controller #{controller.id} is #{debug.stateTxt[@state]}"
 				else
@@ -64,7 +64,7 @@ module.exports = class Modules
 				@state
 
 		toggle: -> # Переключение состояния реле на противоположное
-			@power  if @state is 1 then 0 else 1
+			@power !@state
 
 
 	# Класс для чтения линейки

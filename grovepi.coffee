@@ -2,7 +2,7 @@ Debug = require './debug'
 i2c = require 'i2c'
 #sync = require 'sync'
 
-debug = new Debug 0
+debug = new Debug 1
 
 
 
@@ -12,6 +12,7 @@ module.exports = class GrovePI
 
 	# ID команды на контроллере
 	CMD = 
+		error: 1
 		analog_read: 4
 		analog_write: 5
 		digital_read: 2
@@ -37,7 +38,7 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 
 		# Use fake API if no controller found
-		@fake = wire.address?
+		@fake = false # wire.address?
 
 		@wire = wire  if debug.mode
 		debug.log "Connecting to controller with address #{@address}."
@@ -62,21 +63,26 @@ module.exports = class GrovePI
 			callback = args[1]
 			writeArgs.push [port].concat data
 			writeCmd = 'writeBytes'
-		else
-			writeArgs.push port
+		else if args[0]
+			writeArgs.push [port]
 			callback = args[0]
-			writeCmd = 'writeByte'
+			writeCmd = 'writeBytes' #TODO add writeByte
+		else 
+			callback = port
+			writeCmd = 'writeByte' #TODO add writeByte
 
-		namedCmd = (getCmd cmd) + "(#{cmd})"
-
-		portAndData = [ 'to port', port ]
-		portAndData.push 'with data', data  if data?
-
-		debug.log 'Send', namedCmd, portAndData...
 
 		writeArgs.push (error) ->
 			callback()
+
 			debug.log 'ERROR:', error  if error
+
+		namedCmd = (getCmd cmd) + "(#{cmd})"
+
+		portAndData = [ 'to port', port ] if port isnt callback
+		portAndData.push 'with data', data  if data?
+
+		debug.log 'Send', namedCmd, portAndData...
 
 		unless @fake
 			wire[writeCmd] writeArgs...
@@ -93,11 +99,23 @@ module.exports = class GrovePI
 			readArgs.push port
 			readArgs.push length
 			readCmd = 'readBytes'
-		else
+		else if args[0]
+			length = port
 			callback = args[0]
+			readArgs.push length
+			readCmd = 'readBytes'
+		else
+			callback = port
 			readCmd = 'readByte'
 
-		debug.log 'Receive from port', port
+		if args[1] is callback
+			debug.log 'Receiving from port', port
+		else
+			debug.log 'Receiving bytes:', port
+
+
+		debug.log 'args', readArgs
+
 		readArgs.push (error, data) ->
 			callback data
 			debug.log 'Received', (Array.prototype.slice.call data, 0)
@@ -108,8 +126,8 @@ module.exports = class GrovePI
 		else
 			callback()
 
-	write: ( type, port, data, callback ) ->
-		@send CMD[type + '_write'], port, data, callback
+	write: ( type, port, args... ) ->
+		@send CMD[type + '_write'], port, args...
 
 
 	read: ( type, args... ) ->
@@ -117,10 +135,16 @@ module.exports = class GrovePI
 
 	relay: ( port, state, callback ) ->
 
+	lastError: ( callback ) ->
+		@send CMD.error, =>
+			@receive 2, (data) ->
+			 	callback data
+
 	ranger: ( port, callback ) ->
 		@mode port, MODES.input, =>
 			@send CMD.ranger, port, =>
-				@receive port, 2, (data) ->
-
+				@receive 2, (data) =>
 				 	callback data[1] + data[0]
+				 	@lastError (data) -> debug.log data
+
 
