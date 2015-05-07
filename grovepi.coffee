@@ -1,4 +1,5 @@
 Debug = require './debug'
+Time = require './time'
 i2c = require 'i2c'
 #sync = require 'sync'
 
@@ -9,6 +10,7 @@ debug = new Debug 1
 module.exports = class GrovePI
 
 	wire = 0
+	time = new Time
 
 	# ID команды на контроллере
 	CMD = 
@@ -38,7 +40,7 @@ module.exports = class GrovePI
 		wire = new i2c @address, device: "/dev/i2c-1" 
 
 		# Use fake API if no controller found
-		@fake = false # wire.address?
+		#@fake = false # wire.address?
 
 		@wire = wire  if debug.mode
 		debug.log "Connecting to controller with address #{@address}."
@@ -72,10 +74,21 @@ module.exports = class GrovePI
 			writeCmd = 'writeByte' #TODO add writeByte
 
 
-		writeArgs.push (error) ->
-			callback()
+		writeArgs.push (error) =>
+			try
+				if error
+					time.delay 1/10, =>
+						debug.log 'Retrying...'
+						@send cmd, port, args...
+					debug.log 'ERROR:', error  if error
+					debug.mail 'Controller send error', error.toString()
+				else
+					callback()
+			catch err
+				debug.log 'ERROR:', err
 
-			debug.log 'ERROR:', error  if error
+
+			
 
 		namedCmd = (getCmd cmd) + "(#{cmd})"
 

@@ -1,7 +1,7 @@
 Debug = require './debug'
 GrovePI = require './grovepi'
 
-debug = new Debug 0
+debug = new Debug 1
 
 
 module.exports = class Modules
@@ -15,8 +15,9 @@ module.exports = class Modules
 
 	initModule: ( module, ports ) =>
 		return error: 'No module'  unless module
-		@modules[ ports[0] ] ?= {}
-		@modules[ ports[0] ][ ports[1] ] ?= new @[module] ports
+		#@modules[ ports[0] ] ?= {}
+		#@modules[ ports[0] ][ ports[1] ] ?= new @[module] ports
+		new @[module] ports
 
 	constructor: (ports) ->
 
@@ -50,8 +51,7 @@ module.exports = class Modules
 		power: (state, callback) -> #Управление питанием реле
 
 			if state?
-
-				if @state isnt state
+				if true # @state isnt state
 					@state = if state then 1 else 0
 					controller.mode @port, 1, =>
 						controller.write 'digital', @port, @state, => # команда, данные, коллбэк

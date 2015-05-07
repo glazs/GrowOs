@@ -4,7 +4,7 @@ Time = require './time'
 fs = require 'fs'
 
 
-debug = new Debug 0
+debug = new Debug 1
 
 growConfig = JSON.parse fs.readFileSync 'config.json', 'utf8'
 
@@ -15,6 +15,7 @@ class Grow
 	growSystems = 0
 	root: {}
 	systems = []
+	alive = 0
 
 	constructor: (@config) ->
 
@@ -31,6 +32,7 @@ class Grow
 					@initSystems roomConfig, @root.rooms[roomName]
 
 		@growSystems = growSystems if debug.mode
+		alive = yes
 		debug.log 'All Systems initalized'
 		debug.dir @root
 	initSystems: (config, root) ->
@@ -41,13 +43,15 @@ class Grow
 				root.systems[systemName] = growSystems.init system
 				systems.push root.systems[systemName]
 	down: ->
+		return  if not alive
+		alive = no
+		debug.log 'Going down. Bye!'
 		for system in systems
-			system.power = off  if system.power?
-		process.exit()
+			system.power = off
+		process.exit 0
 
 
 grow = new Grow growConfig
-
 
 # cleanup on exit
 process.stdin.resume()

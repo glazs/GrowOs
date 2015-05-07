@@ -2,7 +2,7 @@ Debug = require './debug'
 GroveModules = require './grove-modules'
 Time = require './time'
 
-debug = new Debug 0
+debug = new Debug 1
 
 Function::property = (prop, desc) ->
 	Object.defineProperty @prototype, prop, desc
